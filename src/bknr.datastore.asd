@@ -24,7 +24,7 @@
                :bknr.indices
                :yason
                :trivial-utf-8
-               #+sbcl :sb-posix)
+               #+sbcl :ppath)
 
   :components ((:module "data" :components ((:file "package")
                                             (:file "encoding" :depends-on ("package"))

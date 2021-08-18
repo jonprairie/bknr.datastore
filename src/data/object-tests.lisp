@@ -22,8 +22,10 @@
                         pathname))
        when (pathname-name file) do (delete-file file)
        unless (pathname-name file) do (delete-directory file))
-    #+sbcl
+    #+(and sbcl (not win32))
     (sb-posix:rmdir (namestring pathname))
+    #+(and sbcl win32)
+    (uiop:delete-directory-tree pathname :if-does-not-exist :ignore)
     #+openmcl
     (ccl::recursive-delete-directory pathname)))
 

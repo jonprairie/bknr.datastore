@@ -66,8 +66,7 @@
   (when (and (boundp '*store*) *store*)
     (update-instances-for-changed-class (class-name class))
     (unless *suppress-schema-warnings*
-      (report-progress "~&; class ~A has been changed. To ensure correct schema ~
-                              evolution, please snapshot your datastore.~%"
+      (report-progress "~&; class ~A has been changed. To ensure correct schema evolution, please snapshot your datastore.~%"
                        (class-name class)))))
 
 (defclass persistent-direct-slot-definition (index-direct-slot-definition)
@@ -407,8 +406,7 @@ transaction log."))
   (loop until (or (null class-name)
                   (find-class class-name nil))
      do (progn
-          (format *query-io* "Class ~A not found, enter new class or enter ~
-                              NIL to ignore objects of this class: "
+          (format *query-io* "Class ~A not found, enter new class or enter NIL to ignore objects of this class: "
                   class-name)
           (finish-output *query-io*)
           (setq class-name (read *query-io*))))

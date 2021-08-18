@@ -78,8 +78,7 @@
   ((function :initarg function))
   (:report (lambda (e stream)
              (with-slots (function) e
-               (format stream "A transaction function attempted to access the function ~A which ~
-                               would make execution of the transaction non-repeatable."
+               (format stream "A transaction function attempted to access the function ~A which would make execution of the transaction non-repeatable."
                        function)))))
 
 ;;; Verbose progress reporting of store operations
@@ -497,8 +496,9 @@ to the log file in an atomic group"))
   (finish-output stream)
   #+cmu
   (unix:unix-fsync (kernel::fd-stream-fd stream))
-  #+sbcl
-  (sb-posix:fsync (sb-kernel::fd-stream-fd stream)))
+  #+(and sbcl (not win32))
+  (sb-posix:fsync (sb-kernel::fd-stream-fd stream))
+  )
 
 (defvar *disable-sync* nil)
 
@@ -683,7 +683,7 @@ pathname until a non-existant directory name has been found."
           (close-transaction-log-stream store)
 
           ;; CMUCL will, dass das directory existiert, ACL nicht
-          #+(or cmu sbcl)
+          #+(or cmu (and sbcl (not win32)))
           (ensure-directories-exist backup-directory)
 
           (when *store-debug*
@@ -710,6 +710,24 @@ pathname until a non-existant directory name has been found."
 
 (defvar *show-transactions* nil)
 
+(defun trunc (pathname position)
+  (unless (ppath:isfile pathname)
+    (error "file ~a does not exist" pathname))
+  (let ((buffer (make-array position s :element-type '(unsigned-byte 8)))
+	(tmp (ppath:join pathname ".tmp"))
+	(bkp (ppath:join pathname ".bkp")))
+    (with-open-file (s pathname
+		       :element-type '(unsigned-byte 8)
+		       :direction :input)
+      (read-sequence buffer s))
+    (with-open-file (s (ppath:join pathname ".tmp")
+		       :element-type '(unsigned-byte 8)
+		       :direction :output
+		       :if-exists :supersede)
+      (write-sequence buffer s))
+    (rename-file pathname bkp)
+    (rename-file tmp pathname)))
+
 (defun truncate-log (pathname position)
   (let ((backup (make-pathname :type "backup" :defaults pathname)))
     (report-progress "~&; creating log file backup: ~A~%" backup)
@@ -723,8 +741,10 @@ pathname until a non-existant directory name has been found."
   (report-progress "~&; truncating transaction log at position ~D.~%" position)
   #+cmu
   (unix:unix-truncate (ext:unix-namestring pathname) position)
-  #+sbcl
+  #+(and sbcl (not win32))
   (sb-posix:truncate (namestring pathname) position)
+  #+(and sbcl win32)
+  (trunc (namestring pathname) position)
   #+openmcl
   (ccl:with-cstrs ((filename (namestring pathname)))
     (#_truncate filename position))

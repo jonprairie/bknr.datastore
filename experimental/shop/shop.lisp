@@ -258,9 +258,9 @@
 (defun getpid ()
   #+openmcl
   (ccl::getpid)
-  #+sbcl
+  #+(and sbcl (not win32))
   (sb-posix:getpid)
-  #+(not (or sbcl openmcl))
+  #+(not (or (and sbcl (not win32)) openmcl))
   (random 10000))
 
 (defmacro with-temporary-directory ((pathname) &body body)
