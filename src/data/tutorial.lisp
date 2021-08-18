@@ -67,12 +67,9 @@
 
 ;;;# Obtaining and loading BKNR Datastore
 ;;;
-;;; You can obtain the current CVS sources of BKNR by following the
-;;; instructions at `http://bknr.net/blog/bknr-devel'. Add the `experimental'
-;;; directory of BKNR to your `asdf:*central-registry*', and load the
-;;; indices module by evaluating the following form:
+;;; You can obtain the latest version of BKNR via Quicklisp:
 
-(asdf:oos 'asdf:load-op :bknr.datastore)
+(ql:quicklisp :bknr.datastore)
 
 ;;; Then switch to the `bknr.datastore' package to try out the tutorial.
 
@@ -82,7 +79,7 @@
 
 ;;; The first datastore we will build is very simple. We have a
 ;;; counter variable for the store, and this counter variable can be
-;;; decremented and indecremented. We want this variable to be
+;;; decremented and incremented. We want this variable to be
 ;;; persistent, so decrementing and incrementing it has to be done
 ;;; through transactions that will be logged by the datastore. We also
 ;;; define a `:BEFORE' method for the generic function `RESTORE-STORE'
