@@ -20,12 +20,12 @@
 	   #:*indexed-class-override*
 
 	   #:slot-index
+	   #:class-index
 	   #:unique-index
 	   #:string-unique-index
 	   #:hash-index
 	   #:hash-list-index
 	   #:array-index
-	   #:class-index
 	   #:skip-list-index
 	   #:class-skip-index
 

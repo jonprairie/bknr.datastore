@@ -62,6 +62,14 @@
 
            #:initialize-transient-instance
 
+	   #:unique-index
+	   #:string-unique-index
+	   #:hash-index
+	   #:hash-list-index
+	   #:array-index
+	   #:skip-list-index
+	   #:class-skip-index
+
            #:store-object-with-id
            #:store-objects-with-class
            #:class-instances            ; convenience alias
